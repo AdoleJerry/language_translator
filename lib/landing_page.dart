@@ -1,5 +1,5 @@
 
-import 'package:final_year_project/Sign_in/auth/auth.dart';
+import 'package:final_year_project/auth/auth.dart';
 import 'package:final_year_project/Sign_in/sign_in_page.dart';
 import 'package:final_year_project/homepage.dart';
 import 'package:flutter/material.dart';

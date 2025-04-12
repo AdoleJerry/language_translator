@@ -1,4 +1,4 @@
-import 'package:final_year_project/Sign_in/auth/auth.dart';
+import 'package:final_year_project/auth/auth.dart';
 import 'package:final_year_project/Sign_in/sign_in_button.dart';
 import 'package:final_year_project/Sign_in/sign_in_manager.dart';
 import 'package:final_year_project/custom_widgets/social_sign_in_buton.dart';

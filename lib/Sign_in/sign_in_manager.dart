@@ -1,4 +1,4 @@
-import 'package:final_year_project/Sign_in/auth/auth.dart';
+import 'package:final_year_project/auth/auth.dart';
 import 'package:flutter/foundation.dart';
 
 class SignInManager {
