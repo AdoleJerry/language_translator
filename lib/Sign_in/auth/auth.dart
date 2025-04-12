@@ -1,29 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomUser {
   CustomUser({
-    this.displayName,
-    this.photoUrl,
     required this.uid,
     this.email,
   });
 
-  final String? displayName;
-  final String? photoUrl;
   final String uid;
   final String? email;
 }
-
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 abstract class AuthBase {
   Stream<CustomUser?> get onAuthStateChanged;
   Future<CustomUser?> currentUser();
   Future<void> signOut();
   Future<CustomUser?> signInWithGoogle();
+  Future<CustomUser?> signInAnonymously();
 }
 
 class Auth implements AuthBase {
@@ -33,8 +27,6 @@ class Auth implements AuthBase {
       return null;
     }
     return CustomUser(
-      displayName: user.displayName,
-      photoUrl: user.photoURL,
       uid: user.uid,
       email: user.email,
     );
@@ -81,6 +73,11 @@ class Auth implements AuthBase {
     return _userFromFirebase(user);
   }
 
+@override
+  Future<CustomUser?> signInAnonymously() async {
+    final authResult = await _auth.signInAnonymously();
+    return _userFromFirebase(authResult.user);
+  }
 
   @override
   Future<void> signOut() async {

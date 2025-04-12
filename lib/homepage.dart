@@ -1,7 +1,10 @@
+import 'package:final_year_project/Sign_in/auth/auth.dart';
 import 'package:final_year_project/audiochatpage.dart';
+import 'package:final_year_project/landing_page.dart';
 import 'package:final_year_project/text_chatbox.dart';
 import 'package:flutter/material.dart';
 import 'package:final_year_project/custom_widgets/image_button.dart';
+import 'package:provider/provider.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -16,9 +19,26 @@ class Homepage extends StatelessWidget {
         ),
         backgroundColor: Colors.blueAccent,
         centerTitle: true,
+        actions: [
+          logoutButton(context),
+        ],
       ),
       body: _buildpage(context),
     );
+  }
+
+  IconButton logoutButton(BuildContext context) {
+    return IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () async{
+           final auth = Provider.of<AuthBase>(context, listen: false);
+           await auth.signOut();
+           Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const LandingPage()),
+              (route) => false, // Remove all previous routes
+            );
+          },
+        );
   }
 
   Widget _buildpage(BuildContext context) {
