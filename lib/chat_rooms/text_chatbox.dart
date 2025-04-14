@@ -1,7 +1,7 @@
 import 'package:final_year_project/custom_widgets/chatbubble.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:flutter/material.dart';
-import '../functions.dart';
+import '../functions/functions.dart';
 
 class TextChatbox extends StatefulWidget {
   const TextChatbox({super.key});

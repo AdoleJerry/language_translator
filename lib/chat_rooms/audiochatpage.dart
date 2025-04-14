@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart'; // Import file picker package
 import 'package:final_year_project/custom_widgets/chatbubble.dart';
-import 'package:final_year_project/functions.dart';
+import 'package:final_year_project/functions/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
