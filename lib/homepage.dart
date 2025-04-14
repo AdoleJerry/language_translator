@@ -7,7 +7,8 @@ import 'package:final_year_project/custom_widgets/image_button.dart';
 import 'package:provider/provider.dart';
 
 class Homepage extends StatelessWidget {
-  const Homepage({super.key});
+  final CustomUser? user;
+  const Homepage({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -45,16 +46,10 @@ class Homepage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.purple],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.white
       ),
-      child: Column(
-        children: [
+      child:
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ImageButton(
@@ -68,13 +63,13 @@ class Homepage extends StatelessWidget {
                 imagePath: 'lib/assets/images/IMG-20241213-WA0175.jpg',
                 height: 200,
               ),
-              const SizedBox(
-                child: Text(
+              const SizedBox(height: 10,),
+               const Text(
                   'Audio Translation',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25, color: Colors.black54),
+                  style: TextStyle(fontSize: 25, color: Colors.black),
                 ),
-              ),
+              
               const SizedBox(
                 height: 30,
               ),
@@ -83,23 +78,26 @@ class Homepage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TextChatbox(),
+                        
+                        builder: (context) { 
+                          
+                          return TextChatbox( userUid: user!.uid,);
+                        }
                       ));
                 },
                 imagePath: 'lib/assets/images/Text to text translation.webp',
                 height: 200,
               ),
-              const SizedBox(
-                child: Text(
+                            const SizedBox(height: 10,),
+
+              const Text(
                   'Text Translation',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25, color: Colors.black54),
+                  style: TextStyle(fontSize: 25, color: Colors.black),
                 ),
-              ),
+              
             ],
           ),
-        ],
-      ),
-    );
+      );
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:final_year_project/auth/auth.dart';
 import 'package:final_year_project/Sign_in/sign_in_page.dart';
 import 'package:final_year_project/homepage.dart';
@@ -21,12 +20,10 @@ class LandingPage extends StatelessWidget {
           if (user == null) {
             return const SignInPage();
           } else {
-            return Provider<CustomUser>.value(
-              value: user,
-              child: Provider<Database>(
+            return Provider<Database>(
                 create: (_) => FirestoreDatabase(uid: user.uid),
-                child: const Homepage(),
-              ),
+                child: Homepage(user : user),
+              
             );
           }
         } else {
