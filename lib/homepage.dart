@@ -1,7 +1,7 @@
 import 'package:final_year_project/auth/auth.dart';
-import 'package:final_year_project/audiochatpage.dart';
+import 'package:final_year_project/chat_rooms/audiochatpage.dart';
 import 'package:final_year_project/landing_page.dart';
-import 'package:final_year_project/text_chatbox.dart';
+import 'package:final_year_project/chat_rooms/text_chatbox.dart';
 import 'package:flutter/material.dart';
 import 'package:final_year_project/custom_widgets/image_button.dart';
 import 'package:provider/provider.dart';
