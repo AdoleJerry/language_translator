@@ -83,6 +83,7 @@ flutter:
     - lib/assets/images/IMG-20241213-WA0175.jpg
     - lib/assets/images/Text to text translation.webp
     - lib/assets/images/google_logo.png
+    - lib/assets/images/audio to text translation.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

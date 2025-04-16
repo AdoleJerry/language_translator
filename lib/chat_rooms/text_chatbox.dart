@@ -1,3 +1,4 @@
+import 'package:final_year_project/chat_rooms/audio_chat_function.dart';
 import 'package:final_year_project/custom_widgets/chatbubble.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:flutter/material.dart';
@@ -179,6 +180,10 @@ class TextChatboxState extends State<TextChatbox> {
                             text: userMessage,
                             color: Colors.blue[100]!,
                             isUser: true,
+                            onDelete: () => deleteTextTranslations(
+                              message.id,
+                              widget.userUid!,
+                            ),
                           ),
                         ),
                         Align(
@@ -187,6 +192,10 @@ class TextChatboxState extends State<TextChatbox> {
                             text: translation,
                             color: Colors.green[100]!,
                             isUser: false,
+                            onDelete: () => deleteTextTranslations(
+                              message.id,
+                              widget.userUid!,
+                            ),
                           ),
                         ),
                       ],

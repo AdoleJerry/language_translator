@@ -30,7 +30,11 @@ class Homepage extends StatelessWidget {
 
   Widget logoutButton(BuildContext context) {
     return ElevatedButton.icon(
-        label: const Text('Logout'),
+        label: const Text('Logout', 
+        style: TextStyle(
+          color: Colors.black,
+          ),
+          ),
           onPressed: () async{
             final confirmLogout = await showDialog<bool>(context: context,
             builder: (context) => AlertDialog(
@@ -56,7 +60,10 @@ class Homepage extends StatelessWidget {
               );
             }
           },
-          icon: const Icon(Icons.logout),
+          icon: const Icon(
+            Icons.logout,
+            color: Colors.black,
+            ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -85,7 +92,7 @@ class Homepage extends StatelessWidget {
                           builder: (context) { return AudioChatPage(userUid: user!.uid,);}
                         ));
                   },
-                  imagePath: 'lib/assets/images/IMG-20241213-WA0175.jpg',
+                  imagePath: 'lib/assets/images/audio to text translation.png',
                   height: 200,
                 ),
                 const SizedBox(height: 10,),

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart'; // Import file picker package
 import 'package:final_year_project/custom_widgets/chatbubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_year_project/functions/functions.dart';
@@ -9,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import the LanguageDropdown widget
+import 'audio_chat_function.dart'; // Import the audio chat function file
 
 class AudioChatPage extends StatefulWidget {
   final String? userUid;
@@ -59,50 +57,40 @@ class _AudioChatPageState extends State<AudioChatPage> {
   }
 
   Future<void> _startRecording() async {
-    final micStatus = await Permission.microphone.status;
-
-    if (!micStatus.isGranted) {
-      _showError("Permissions not granted. Please enable microphone and storage permissions.");
-      return;
+    try {
+      await startRecording(_recorder, (isRecording) {
+        setState(() {
+          _isRecording = isRecording;
+        });
+      });
+    } catch (e) {
+      _showError(e.toString());
     }
-
-    final directory = await getTemporaryDirectory();
-    _recordedFilePath = '${directory.path}/audio.aac';
-
-    await _recorder.startRecorder(
-      toFile: _recordedFilePath,
-      codec: Codec.aacADTS,
-      sampleRate: 16000,
-      numChannels: 1,
-    );
-
-    setState(() {
-      _isRecording = true;
-    });
   }
 
   Future<void> _stopRecording() async {
-    await _recorder.stopRecorder();
-
-    setState(() {
-      _isRecording = false;
-    });
-  }
-
-  Future<void> _importAudio() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.audio,
-    );
-
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _recordedFilePath = result.files.single.path;
+    try {
+      await stopRecording(_recorder, (isRecording) {
+        setState(() {
+          _isRecording = isRecording;
+        });
       });
-    } else {
-      _showError("No audio file selected.");
+    } catch (e) {
+      _showError(e.toString());
     }
   }
 
+  Future<void> _importAudio() async {
+    try {
+      await importAudio((filePath) {
+        setState(() {
+          _recordedFilePath = filePath;
+        });
+      });
+    } catch (e) {
+      _showError(e.toString());
+    }
+  }
 
   Future<void> _transcribeAndTranslateAudio() async {
     if (_recordedFilePath == null) {
@@ -193,33 +181,6 @@ class _AudioChatPageState extends State<AudioChatPage> {
     }
   }
 
-  Future<void> _deleteMessage(String documentId, String? audioUrl) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-
-      // Delete the audio file from Firebase Storage if audioUrl exists
-      if (audioUrl != null) {
-        final storageRef = FirebaseStorage.instance.refFromURL(audioUrl);
-        await storageRef.delete();
-        print("Audio file deleted from Firebase Storage.");
-      }
-
-      // Delete the Firestore document
-      await firestore
-          .collection('audio_translations')
-          .doc(widget.userUid)
-          .collection('messages')
-          .doc(documentId)
-          .delete();
-      print("Message deleted from Firestore.");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Message deleted successfully.")),
-      );
-    } catch (e) {
-      _showError("Error deleting message: $e");
-    }
-  }
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -283,24 +244,22 @@ class _AudioChatPageState extends State<AudioChatPage> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-                    final transcription = message['transcription']?.isNotEmpty == true
-                        ? message['transcription']
-                        : "Error understanding audio, can you say it again?";
                     final translation = message['translation']?.isNotEmpty == true
                         ? message['translation']
                         : "Error understanding audio, can you say it again?";
                     final data = message.data() as Map<String, dynamic>;
                     final audioUrl = data.containsKey('audioUrl') ? data['audioUrl'] : null; // Check if audioUrl exists
-                    final timestamp =  message['timestamp'] as Timestamp?; // Get the timestamp
+                    final documentId = message.id; // Get the document ID
+                    final timestamp = message['timestamp'] as Timestamp?; // Get the timestamp
                     final formattedDate = timestamp != null
                         ? DateFormat('yyyy-MM-dd HH:mm').format(timestamp.toDate())
                         : 'Unknown Date';
-                    // Get the document ID
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Padding(padding: const EdgeInsets.only(bottom: 8.0),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             formattedDate,
                             style: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -308,27 +267,65 @@ class _AudioChatPageState extends State<AudioChatPage> {
                           ),
                         ),
                         if (audioUrl != null) // Only show the play button if audioUrl exists
-                          Align(
-                            alignment: Alignment.centerRight, // User's audio on the right
-                            child: ElevatedButton.icon(
-                              onPressed: () async {
-                                await _player.startPlayer(
-                                  fromURI: audioUrl,
-                                  codec: Codec.aacADTS,
-                                  whenFinished: () {
-                                    setState(() {
-                                      _isPlaying = false;
-                                    });
-                                  },
-                                );
-                                setState(() {
-                                  _isPlaying = true;
-                                });
-                              },
-                              icon: const Icon(Icons.play_arrow),
-                              label: const Text("Play Audio"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue[100],
+                          GestureDetector(
+                            onLongPress: () async {
+                              // Confirm deletion
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("Delete Audio"),
+                                  content: const Text("Are you sure you want to delete this audio and its translation?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                      child: const Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: const Text("Delete"),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  // Call the delete functions
+                                  await deleteAudioMessage(audioUrl); // Delete the audio file
+                                  await deleteAudioTranslations(documentId, widget.userUid!); // Delete the Firestore document
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Audio and translation deleted successfully.")),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Error deleting audio: $e")),
+                                  );
+                                }
+                              }
+                            },
+                            child: Align(
+                              alignment: Alignment.centerRight, // User's audio on the right
+                              child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  await _player.startPlayer(
+                                    fromURI: audioUrl,
+                                    codec: Codec.aacADTS,
+                                    whenFinished: () {
+                                      setState(() {
+                                        _isPlaying = false;
+                                      });
+                                    },
+                                  );
+                                  setState(() {
+                                    _isPlaying = true;
+                                  });
+                                },
+                                icon: const Icon(Icons.play_arrow),
+                                label: const Text("Play Audio"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue[100],
+                                ),
                               ),
                             ),
                           ),
@@ -339,20 +336,45 @@ class _AudioChatPageState extends State<AudioChatPage> {
                             text: translation,
                             color: Colors.green[100]!,
                             isUser: false,
+                            onDelete: () async {
+                              // Confirm deletion
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("Delete Message"),
+                                  content: const Text("Are you sure you want to delete this translation and its audio?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                      child: const Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: const Text("Delete"),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  // Call the delete functions
+                                  await deleteAudioMessage(audioUrl); // Delete the audio file
+                                  await deleteAudioTranslations(documentId, widget.userUid!); // Delete the Firestore document
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Message and audio deleted successfully.")),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Error deleting message: $e")),
+                                  );
+                                }
+                              }
+                            },
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerLeft, // Transcription on the left
-                          child: ChatBubble(
-                            text: transcription,
-                            color: Colors.grey[200]!,
-                            isUser: false,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        
-                        
+                        const SizedBox(height: 10),  
                       ],
                     );
                   },
