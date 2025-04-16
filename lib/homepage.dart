@@ -15,11 +15,11 @@ class Homepage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Homepage',
+          'Language Translator',
           style: TextStyle(color: Colors.black, fontSize: 25),
         ),
         backgroundColor: Colors.blueAccent,
-        centerTitle: true,
+        
         actions: [
           logoutButton(context),
         ],
@@ -28,76 +28,102 @@ class Homepage extends StatelessWidget {
     );
   }
 
-  IconButton logoutButton(BuildContext context) {
-    return IconButton(
-          icon: const Icon(Icons.logout),
+  Widget logoutButton(BuildContext context) {
+    return ElevatedButton.icon(
+        label: const Text('Logout'),
           onPressed: () async{
-           final auth = Provider.of<AuthBase>(context, listen: false);
-           await auth.signOut();
-           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const LandingPage()),
-              (route) => false, // Remove all previous routes
-            );
+            final confirmLogout = await showDialog<bool>(context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Logout'),
+              content: const Text('Are you sure you want to logout?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Yes'),
+                ),
+              ],
+            ));
+            if (confirmLogout == true) {
+              final auth = Provider.of<AuthBase>(context, listen: false);
+              await auth.signOut();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LandingPage()),
+                (route) => false, // Remove all previous routes
+              );
+            }
           },
+          icon: const Icon(Icons.logout),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
         );
   }
 
   Widget _buildpage(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Colors.white
-      ),
-      child:
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ImageButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AudioChatPage(),
-                      ));
-                },
-                imagePath: 'lib/assets/images/IMG-20241213-WA0175.jpg',
-                height: 200,
-              ),
-              const SizedBox(height: 10,),
-               const Text(
-                  'Audio Translation',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25, color: Colors.black),
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white
+        ),
+        child:
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ImageButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) { return AudioChatPage(userUid: user!.uid,);}
+                        ));
+                  },
+                  imagePath: 'lib/assets/images/IMG-20241213-WA0175.jpg',
+                  height: 200,
                 ),
-              
-              const SizedBox(
-                height: 30,
-              ),
-              ImageButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        
-                        builder: (context) { 
+                const SizedBox(height: 10,),
+                 const Text(
+                    'Audio Translation',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 25, color: Colors.black),
+                  ),
+                
+                const SizedBox(
+                  height: 30,
+                ),
+                ImageButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
                           
-                          return TextChatbox( userUid: user!.uid,);
-                        }
-                      ));
-                },
-                imagePath: 'lib/assets/images/Text to text translation.webp',
-                height: 200,
-              ),
-                            const SizedBox(height: 10,),
-
-              const Text(
-                  'Text Translation',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25, color: Colors.black),
+                          builder: (context) { 
+                            
+                            return TextChatbox( userUid: user!.uid,);
+                          }
+                        ));
+                  },
+                  imagePath: 'lib/assets/images/Text to text translation.webp',
+                  height: 200,
                 ),
-              
-            ],
-          ),
-      );
+                              const SizedBox(height: 10,),
+      
+                const Text(
+                    'Text Translation',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 25, color: Colors.black),
+                  ),
+                
+              ],
+            ),
+        ),
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 class TextChatbox extends StatefulWidget {
   final String? userUid; // Optional parameter to pass user UID
+  
   const TextChatbox({super.key, this.userUid});
 
   @override
@@ -139,6 +140,10 @@ class TextChatboxState extends State<TextChatbox> {
                 }
 
                 final messages = snapshot.data!.docs;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                _scrollToBottom();
+                });
 
                 return ListView.builder(
                   controller: _scrollController, // Attach ScrollController
