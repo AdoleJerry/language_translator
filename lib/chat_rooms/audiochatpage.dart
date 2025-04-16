@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import the LanguageDropdown widget
-import 'audio_chat_function.dart'; // Import the audio chat function file
+import '../functions/audio_chat_function.dart'; // Import the audio chat function file
 
 class AudioChatPage extends StatefulWidget {
   final String? userUid;

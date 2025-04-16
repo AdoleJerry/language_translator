@@ -1,4 +1,4 @@
-import 'package:final_year_project/chat_rooms/audio_chat_function.dart';
+import 'package:final_year_project/functions/audio_chat_function.dart';
 import 'package:final_year_project/custom_widgets/chatbubble.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:flutter/material.dart';
@@ -180,10 +180,35 @@ class TextChatboxState extends State<TextChatbox> {
                             text: userMessage,
                             color: Colors.blue[100]!,
                             isUser: true,
-                            onDelete: () => deleteTextTranslations(
+                            onDelete: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Delete Translation'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this Message and it\'s translation?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(true),
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              if (confirm == true) {
+                              deleteTextTranslations(
                               message.id,
                               widget.userUid!,
-                            ),
+                            );
+                            }
+                            }
                           ),
                         ),
                         Align(
@@ -192,10 +217,35 @@ class TextChatboxState extends State<TextChatbox> {
                             text: translation,
                             color: Colors.green[100]!,
                             isUser: false,
-                            onDelete: () => deleteTextTranslations(
+                            onDelete: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Delete Translation'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this translation and it\'s message?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(true),
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              if (confirm == true) {
+                              deleteTextTranslations(
                               message.id,
                               widget.userUid!,
-                            ),
+                            );
+                            }
+                            }
                           ),
                         ),
                       ],
