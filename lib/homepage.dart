@@ -75,62 +75,65 @@ class Homepage extends StatelessWidget {
 
   Widget _buildpage(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white
-        ),
-        child:
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ImageButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) { return AudioChatPage(userUid: user!.uid,);}
-                        ));
-                  },
-                  imagePath: 'lib/assets/images/audio to text translation.png',
-                  height: 200,
-                ),
-                const SizedBox(height: 10,),
-                 const Text(
-                    'Audio Translation',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 25, color: Colors.black),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Colors.white
+          ),
+          child:
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ImageButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) { return AudioChatPage(userUid: user!.uid,);}
+                          ));
+                    },
+                    imagePath: 'lib/assets/images/audio to text translation.png',
+                    height: 200,
                   ),
-                
-                const SizedBox(
-                  height: 30,
-                ),
-                ImageButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          
-                          builder: (context) { 
+                  const SizedBox(height: 10,),
+                   const Text(
+                      'Audio Translation',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 25, color: Colors.black),
+                    ),
+                  
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ImageButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
                             
-                            return TextChatbox( userUid: user!.uid,);
-                          }
-                        ));
-                  },
-                  imagePath: 'lib/assets/images/Text to text translation.webp',
-                  height: 200,
-                ),
-                              const SizedBox(height: 10,),
-      
-                const Text(
-                    'Text Translation',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 25, color: Colors.black),
+                            builder: (context) { 
+                              
+                              return TextChatbox( userUid: user!.uid,);
+                            }
+                          ));
+                    },
+                    imagePath: 'lib/assets/images/Text to text translation.webp',
+                    height: 200,
                   ),
-                
-              ],
-            ),
-        ),
+                                const SizedBox(height: 10,),
+        
+                  const Text(
+                      'Text Translation',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 25, color: Colors.black),
+                    ),
+                  
+                ],
+              ),
+          ),
+      ),
     );
   }
 }

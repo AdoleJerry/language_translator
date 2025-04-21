@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:final_year_project/custom_widgets/supportedlanaguages.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import the LanguageDropdown widget
 import '../functions/audio_chat_function.dart'; // Import the audio chat function file
+import 'package:path_provider/path_provider.dart';
 
 class AudioChatPage extends StatefulWidget {
   final String? userUid;
@@ -58,13 +59,21 @@ class _AudioChatPageState extends State<AudioChatPage> {
 
   Future<void> _startRecording() async {
     try {
-      await startRecording(_recorder, (isRecording) {
-        setState(() {
-          _isRecording = isRecording;
-        });
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+      await _recorder.startRecorder(
+        toFile: filePath,
+        codec: Codec.aacADTS,
+      );
+
+      setState(() {
+        _isRecording = true;
+        _recordedFilePath = filePath; // Set the file path here
       });
+
     } catch (e) {
-      _showError(e.toString());
+      _showError("Error starting recording");
     }
   }
 
@@ -76,7 +85,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
         });
       });
     } catch (e) {
-      _showError(e.toString());
+      _showError('error stopping recording');
     }
   }
 
@@ -420,11 +429,11 @@ class _AudioChatPageState extends State<AudioChatPage> {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      onPressed: _isRecording || _recordedFilePath == null
-                          ? null // Disable playing while recording or if no audio is available
-                          : () async {
+                      onPressed: (_recordedFilePath != null && !_isRecording)
+                          ? () async {
                               await _playAudio(_recordedFilePath!); // Play or stop the audio
-                            },
+                            }
+                          : null, // Disable button if no audio is available or recording is in progress
                       icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow), // Switch icon
                       label: Text(_isPlaying ? "Stop" : "Play"),
                       style: ElevatedButton.styleFrom(
@@ -435,7 +444,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-                      onPressed: _recordedFilePath != null && !_isRecording && !_isPlaying && !_isSending
+                      onPressed: (_recordedFilePath != null && !_isRecording && !_isPlaying && !_isSending)
                           ? () async {
                               setState(() {
                                 _isSending = true; // Start sending
@@ -477,7 +486,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      onPressed: _recordedFilePath != null
+                      onPressed: (_recordedFilePath != null && !_isRecording && !_isPlaying)
                           ? () {
                               setState(() {
                                 _recordedFilePath = null; // Clear the recorded file path
@@ -486,7 +495,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
                                 const SnackBar(content: Text("Recording deleted.")),
                               );
                             }
-                          : null,
+                          : null, // Disable button if no audio is available or recording/playing is in progress
                       icon: const Icon(Icons.delete),
                       label: const Text("Delete"),
                       style: ElevatedButton.styleFrom(
