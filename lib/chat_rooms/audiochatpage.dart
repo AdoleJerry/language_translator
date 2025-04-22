@@ -35,11 +35,19 @@ class _AudioChatPageState extends State<AudioChatPage> {
   bool _isPlaying = false;
   bool _isSending = false; // Track if a message is being sent
   String? _selectedLanguageCode; // Store the selected language code
+  late Stream<QuerySnapshot> _messagesStream;// stream for messages
+  final Map<String, bool> _isPlayingMap = {}; // Tracks the playing state for each audio file
 
   @override
   void initState() {
     super.initState();
     _initialize();
+    _messagesStream = FirebaseFirestore.instance
+      .collection('audio_translations')
+      .doc(widget.userUid) // Use the user's UID to fetch their messages
+      .collection('messages')
+      .orderBy('timestamp', descending: false) // Order by timestamp
+      .snapshots();
   }
 
   Future<void> _initialize() async {
@@ -226,12 +234,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('audio_translations')
-                  .doc(widget.userUid) // Use the user's UID to fetch their messages
-                  .collection('messages')
-                  .orderBy('timestamp', descending: false) // Order by timestamp
-                  .snapshots(),
+              stream:_messagesStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -278,7 +281,6 @@ class _AudioChatPageState extends State<AudioChatPage> {
                         if (audioUrl != null) // Only show the play button if audioUrl exists
                           GestureDetector(
                             onLongPress: () async {
-                              // Confirm deletion
                               final confirm = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -317,21 +319,36 @@ class _AudioChatPageState extends State<AudioChatPage> {
                               alignment: Alignment.centerRight, // User's audio on the right
                               child: ElevatedButton.icon(
                                 onPressed: () async {
+                                  if (_isPlayingMap[documentId] == true){
+                                    await _player.stopPlayer();
+                                    setState(() {
+                                      _isPlayingMap[documentId] = false;
+                                    });
+                                  }else {
+                                    for (final key in _isPlayingMap.keys){
+                                      _isPlayingMap[key] = false;
+                                    }
+                                  
                                   await _player.startPlayer(
                                     fromURI: audioUrl,
                                     codec: Codec.aacADTS,
                                     whenFinished: () {
                                       setState(() {
-                                        _isPlaying = false;
+                                        _isPlayingMap[documentId] = false;
                                       });
                                     },
                                   );
                                   setState(() {
-                                    _isPlaying = true;
+                                    _isPlayingMap[documentId] = true;
                                   });
+                                  }
                                 },
-                                icon: const Icon(Icons.play_arrow),
-                                label: const Text("Play Audio"),
+                                icon:  Icon(
+                                   _isPlayingMap[documentId] == true ? Icons.stop : Icons.play_arrow,
+                                 ),
+                                label:Text(
+                                 _isPlayingMap[documentId] == true ? "Stop" : "Play",
+                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue[100],
                                 ),
