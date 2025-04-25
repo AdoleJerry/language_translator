@@ -22,6 +22,9 @@ class LanguageDropdownState extends State<LanguageDropdown> {
     'French',
     'German',
     'Chinese',
+    'Hausa',
+    'Igbo',
+    'Yoruba',
   ];
 
   // Corresponding list of language codes
@@ -31,6 +34,9 @@ class LanguageDropdownState extends State<LanguageDropdown> {
     'fr',
     'de',
     'zh',
+    'ha',
+    'ig',
+    'yo',
   ];
 
   String? _selectedLanguageCode;

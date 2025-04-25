@@ -41,7 +41,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
   @override
   void initState() {
     super.initState();
-    _initialize();
+    _initializeMic();
     _messagesStream = FirebaseFirestore.instance
       .collection('audio_translations')
       .doc(widget.userUid) // Use the user's UID to fetch their messages
@@ -50,7 +50,7 @@ class _AudioChatPageState extends State<AudioChatPage> {
       .snapshots();
   }
 
-  Future<void> _initialize() async {
+  Future<void> _initializeMic() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       throw RecordingPermissionException('Microphone permission not granted');

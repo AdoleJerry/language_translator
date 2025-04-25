@@ -22,6 +22,7 @@ class TextChatboxState extends State<TextChatbox> {
   String? _selectedLanguage;
   bool _isTranslating = false;
   final GoogleTranslationService _translationService;
+  late Stream<QuerySnapshot> _textstream;
 
   TextChatboxState()
       : _translationService =
@@ -106,6 +107,16 @@ class TextChatboxState extends State<TextChatbox> {
     });
   }
 
+  void initState() {
+    super.initState();
+    _textstream =  FirebaseFirestore.instance
+                  .collection('text_to_text')
+                  .doc(widget.userUid)
+                  .collection('messages')
+                  .orderBy('date', descending: false) // Ensure ascending order
+                  .snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,12 +132,7 @@ class TextChatboxState extends State<TextChatbox> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('text_to_text')
-                  .doc(widget.userUid)
-                  .collection('messages')
-                  .orderBy('date', descending: false) // Ensure ascending order
-                  .snapshots(),
+              stream:_textstream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
