@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 class TextChatbox extends StatefulWidget {
   final String? userUid; // Optional parameter to pass user UID
-  
+
   const TextChatbox({super.key, this.userUid});
 
   @override
@@ -17,7 +17,8 @@ class TextChatbox extends StatefulWidget {
 
 class TextChatboxState extends State<TextChatbox> {
   final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = ScrollController(); // Add ScrollController
+  final ScrollController _scrollController =
+      ScrollController(); // Add ScrollController
   final List<Map<String, String>> _messages = [];
   String? _selectedLanguage;
   bool _isTranslating = false;
@@ -107,14 +108,15 @@ class TextChatboxState extends State<TextChatbox> {
     });
   }
 
+  @override
   void initState() {
     super.initState();
-    _textstream =  FirebaseFirestore.instance
-                  .collection('text_to_text')
-                  .doc(widget.userUid)
-                  .collection('messages')
-                  .orderBy('date', descending: false) // Ensure ascending order
-                  .snapshots();
+    _textstream = FirebaseFirestore.instance
+        .collection('text_to_text')
+        .doc(widget.userUid)
+        .collection('messages')
+        .orderBy('date', descending: false) // Ensure ascending order
+        .snapshots();
   }
 
   @override
@@ -132,7 +134,7 @@ class TextChatboxState extends State<TextChatbox> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:_textstream,
+              stream: _textstream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -149,7 +151,7 @@ class TextChatboxState extends State<TextChatbox> {
                 final messages = snapshot.data!.docs;
 
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                _scrollToBottom();
+                  _scrollToBottom();
                 });
 
                 return ListView.builder(
@@ -162,7 +164,8 @@ class TextChatboxState extends State<TextChatbox> {
                     final translation = message['translation'] as String;
                     final timestamp = message['date'] as Timestamp?;
                     final formattedDate = timestamp != null
-                        ? DateFormat('yyyy-MM-dd HH:mm').format(timestamp.toDate())
+                        ? DateFormat('yyyy-MM-dd HH:mm')
+                            .format(timestamp.toDate())
                         : 'Unknown Date';
 
                     return Column(
@@ -183,76 +186,78 @@ class TextChatboxState extends State<TextChatbox> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: ChatBubble(
-                            text: userMessage,
-                            color: Colors.blue[100]!,
-                            isUser: true,
-                            onDelete: () async {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text('Delete Translation'),
-                                    content: const Text(
-                                      'Are you sure you want to delete this Message and it\'s translation?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(false),
-                                        child: const Text('Cancel'),
+                              text: userMessage,
+                              color: Colors.blue[100]!,
+                              isUser: true,
+                              onDelete: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Delete Translation'),
+                                      content: const Text(
+                                        'Are you sure you want to delete this Message and it\'s translation?',
                                       ),
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (confirm == true) {
+                                  deleteTextTranslations(
+                                    message.id,
+                                    widget.userUid!,
                                   );
-                                },
-                              );
-                              if (confirm == true) {
-                              deleteTextTranslations(
-                              message.id,
-                              widget.userUid!,
-                            );
-                            }
-                            }
-                          ),
+                                }
+                              }),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: ChatBubble(
-                            text: translation,
-                            color: Colors.green[100]!,
-                            isUser: false,
-                            onDelete: () async {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text('Delete Translation'),
-                                    content: const Text(
-                                      'Are you sure you want to delete this translation and it\'s message?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(false),
-                                        child: const Text('Cancel'),
+                              text: translation,
+                              color: Colors.green[100]!,
+                              isUser: false,
+                              onDelete: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Delete Translation'),
+                                      content: const Text(
+                                        'Are you sure you want to delete this translation and it\'s message?',
                                       ),
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (confirm == true) {
+                                  deleteTextTranslations(
+                                    message.id,
+                                    widget.userUid!,
                                   );
-                                },
-                              );
-                              if (confirm == true) {
-                              deleteTextTranslations(
-                              message.id,
-                              widget.userUid!,
-                            );
-                            }
-                            }
-                          ),
+                                }
+                              }),
                         ),
                       ],
                     );
@@ -299,10 +304,13 @@ class TextChatboxState extends State<TextChatbox> {
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-                      onPressed: _isTranslating ? null : () => _translateText(widget.userUid!),
+                      onPressed: _isTranslating
+                          ? null
+                          : () => _translateText(widget.userUid!),
                       icon: _isTranslating
                           ? const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
                             )
                           : const Icon(Icons.send, color: Colors.blue),
                       tooltip: 'Send',
