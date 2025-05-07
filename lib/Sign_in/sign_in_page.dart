@@ -39,10 +39,10 @@ class SignInPageState extends State<SignInPage> {
   bool isloading = false;
 
   void _setLoading(bool value) {
-    if (mounted){
-    setState(() {
-      isloading = value;
-    });
+    if (mounted) {
+      setState(() {
+        isloading = value;
+      });
     }
   }
 
@@ -75,14 +75,14 @@ class SignInPageState extends State<SignInPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
+                  const Text(
+                    'Sign In',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                   const SizedBox(height: 40),
                   SocialSignInButton(
                     asset: 'lib/assets/images/google_logo.png',
@@ -90,24 +90,29 @@ class SignInPageState extends State<SignInPage> {
                     color: Colors.white,
                     textcolor: Colors.black,
                     onpressed: () async {
-                      isloading ? null :
-                      _setLoading(true);
+                      isloading ? null : _setLoading(true);
                       try {
-                        final auth = Provider.of<AuthBase>(context, listen: false);
+                        final auth =
+                            Provider.of<AuthBase>(context, listen: false);
                         await auth.signInWithGoogle();
                       } on PlatformException catch (e) {
                         if (e.code == 'ERROR_ABORTED_BY_USER') {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Sign-in canceled by user.')),
+                            const SnackBar(
+                                content: Text('Sign-in canceled by user.')),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Sign-in failed: ${e.message}')),
+                            SnackBar(
+                              content: Text('Sign-in failed: ${e.message}'),
+                            ),
                           );
                         }
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('An unexpected error occurred: $e')),
+                          SnackBar(
+                              content:
+                                  Text('An unexpected error occurred: $e')),
                         );
                       } finally {
                         _setLoading(false);
@@ -122,14 +127,16 @@ class SignInPageState extends State<SignInPage> {
                     color: Colors.green,
                     textcolor: Colors.white,
                     onpressed: () async {
-                       isloading ? null :
-                      _setLoading(true);
+                      isloading ? null : _setLoading(true);
                       try {
-                        final auth = Provider.of<AuthBase>(context, listen: false);
+                        final auth =
+                            Provider.of<AuthBase>(context, listen: false);
                         await auth.signInAnonymously();
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('An unexpected error occurred: $e')),
+                          SnackBar(
+                              content:
+                                  Text('An unexpected error occurred: $e')),
                         );
                       } finally {
                         _setLoading(false);
