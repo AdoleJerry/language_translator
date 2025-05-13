@@ -1,18 +1,27 @@
 {
   "project_info": {
     "project_number": "529521491098",
+    "firebase_url": "https://final-year-project-444623-default-rtdb.firebaseio.com",
     "project_id": "final-year-project-444623",
     "storage_bucket": "final-year-project-444623.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:529521491098:android:b7376e8c709bbad0e7b323",
+        "mobilesdk_app_id": "1:529521491098:android:b525c2a6bf2a4b12e7b323",
         "android_client_info": {
           "package_name": "com.example.final_year_project"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "529521491098-8ss6qf887uvflafoc38sf9uogfdn8n0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.final_year_project",
+            "certificate_hash": "b28e3c2562c73b6f5e613fb7bb2d3dfb154a4460"
+          }
+        },
         {
           "client_id": "529521491098-9hk524t752gncm8krqk0cu8794d8mg3n.apps.googleusercontent.com",
           "client_type": 1,
