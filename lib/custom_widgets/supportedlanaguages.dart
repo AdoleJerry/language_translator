@@ -43,24 +43,28 @@ class LanguageDropdownState extends State<LanguageDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: _selectedLanguageCode,
-      icon: const Icon(Icons.language, color: Colors.blue),
-      dropdownColor: widget.fillColor,
-      items: List.generate(_languageNames.length, (index) {
-        return DropdownMenuItem<String>(
-          value: _languageCodes[index], // Use the language code as the value
-          child: Text(_languageNames[index]), // Display the language name
-        );
-      }),
-      onChanged: (String? newValue) {
-        setState(() {
-          _selectedLanguageCode = newValue;
-        });
-        if (newValue != null) {
-          widget.onLanguageSelected(newValue); // Pass the selected language code
-        }
-      },
+    return SingleChildScrollView(
+      child: DropdownButtonFormField<String>(
+        value: _selectedLanguageCode,
+        icon: const Icon(Icons.language, color: Colors.blue),
+        dropdownColor: widget.fillColor,
+        hint: const Text('Select a Language'),
+        items: List.generate(_languageNames.length, (index) {
+          return DropdownMenuItem<String>(
+            value: _languageCodes[index], // Use the language code as the value
+            child: Text(_languageNames[index]), // Display the language name
+          );
+        }),
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedLanguageCode = newValue;
+          });
+          if (newValue != null) {
+            widget.onLanguageSelected(
+                newValue); // Pass the selected language code
+          }
+        },
+      ),
     );
   }
 }

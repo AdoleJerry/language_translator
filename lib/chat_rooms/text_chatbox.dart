@@ -87,7 +87,6 @@ class TextChatboxState extends State<TextChatbox> {
           'user': text,
           'translation': 'Error unable to translate text',
         });
-        print('Error: $e');
       });
     } finally {
       setState(() {
