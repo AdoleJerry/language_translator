@@ -3,7 +3,8 @@ import 'package:final_year_project/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-void main() async{
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter is initialized
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return Provider<AuthBase>(
       create: (context) => Auth(),
       child: const MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Language Translator',
         home: LandingPage(),
         debugShowCheckedModeBanner: false,
       ),
